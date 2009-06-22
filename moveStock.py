@@ -5,7 +5,7 @@
 import cgitb
 import cgi
 import sqlite3
-from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, cell
+from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, cell, getItemName
 
 cgitb.enable()
 
@@ -34,10 +34,9 @@ FROM
 quantities = []
 total = 0
 for (thisBinId,thisItemId,binName,mfr,brand,name,quantity) in cursor:
-    if not brand: brand = '-'
     quantities.append(quantity)
     total += quantity
-    itemName = '%s:%s:%s'%(mfr,brand,name)
+    itemName = getItemName(mfr,brand,name)
 
 ###################################
 # Get list of all bins and their size

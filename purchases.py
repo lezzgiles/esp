@@ -5,7 +5,7 @@
 import cgitb
 import cgi
 import sqlite3
-from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getTranType
+from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getTranType, getItemName
 
 cgitb.enable()
 
@@ -23,8 +23,7 @@ printHeader('Purchases')
 cursor.execute("SELECT itemId,manufacturer,brand,name FROM item ORDER BY manufacturer,brand,name")
 itemOptions = []
 for (itemId,manufacturer,brand,name) in cursor:
-    if not brand: brand = '-'
-    itemOptions.append('<OPTION VALUE=%s>%s:%s:%s</OPTION>'%(itemId,manufacturer,brand,name))
+    itemOptions.append('<OPTION VALUE=%s>%s</OPTION>'%(itemId,getItemName(manufacturer,brand,name)))
     
 #####
 # Add form

@@ -5,7 +5,7 @@
 import cgitb
 import cgi
 import sqlite3
-from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString,cell,moneyCell,getTranType
+from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString,cell,moneyCell,getTranType,getItemName
 
 cgitb.enable()
 
@@ -32,11 +32,10 @@ cursor.execute('SELECT manufacturer,brand,name,quantity,pricePerItem FROM TransI
 print '<TABLE BORDER=1><TR><TH>Item</TH><TH>qty</TH><TH>unit price</TH><TH>tot price</TH>'
 totalPrice = 0
 for (manufacturer,brand,name,quantity,pricePerItem) in cursor:
-    if not brand: brand = '-'
     itemsTotalPrice = (int(quantity)*int(pricePerItem))
     totalPrice += itemsTotalPrice
     print '<TR>'
-    print cell('%s:%s:%s'%(manufacturer,brand,name))
+    print cell(getItemName(manufacturer,brand,name))
     print cell(quantity)
     print moneyCell(pricePerItem)
     print moneyCell(itemsTotalPrice)

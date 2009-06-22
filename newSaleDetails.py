@@ -6,7 +6,7 @@ import cgitb
 import cgi
 import sqlite3
 import sys
-from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell
+from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getItemName
 
 cgitb.enable()
 
@@ -45,8 +45,7 @@ for i in range(1,int(maxItemIdx)+1):
         pricePerItem = dollarStringToCents(form['pricePerItem-'+str(i)].value)
         cursor.execute('SELECT manufacturer,brand,name FROM Item WHERE itemId = ?',(itemId))
         (mfg,brand,name) = cursor.fetchone()
-        if not brand: brand = '-'
-        print "<H3>Item %s:%s:%s</H3>"%(mfg,brand,name)
+        print "<H3>Item %s</H3>"%getItemName(mfg,brand,name)
 
         cursor.execute('''
 SELECT
@@ -66,7 +65,7 @@ GROUP BY binId
             bins.append([binId,binName,binQuantity])
 
         if totalFound < int(quantity):
-            print "<p class=error>Cannot find enough %s:%s:%s to fill the order - need %s, but can only find %d</p>"%(mfg,brand,name,quantity,totalFound)
+            print "<p class=error>Cannot find enough %s to fill the order - need %s, but can only find %d</p>"%(getItemName(mfg,brand,name),quantity,totalFound)
         print '<p>Need %s items; got <INPUT TYPE=TEXT SIZE=4 VALUE=0 ID=moved-%s /> items</p>'%(quantity,itemId)
         print '<INPUT TYPE=HIDDEN NAME=numberOfBins-%s VALUE=%d />'%(itemId,len(bins))
         print '<INPUT TYPE=HIDDEN NAME=pricePerItem-%s VALUE=%d />'%(itemId,pricePerItem)

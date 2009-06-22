@@ -5,7 +5,7 @@
 import cgitb
 import cgi
 import sqlite3
-from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString
+from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, getItemName
 
 cgitb.enable()
 
@@ -34,9 +34,8 @@ if len(stockList) == 0:
 else:
     print "<TABLE BORDER=1 class=listthings>"
     for (itemId,manufacturer,brand,name,number) in stockList:
-        if not brand: brand = '-'
         print "<TR>"
-        print "<TD><A HREF=singleitem.py?itemId=%s>%s:%s:%s</A></TD>"%(itemId,manufacturer,brand,name)
+        print "<TD><A HREF=singleitem.py?itemId=%s>%s</A></TD>"%(itemId,getItemName(manufacturer,brand,name))
         print "<TD>%d</TD>"%(number,)
         print "</TR>"
     print "</TABLE>"

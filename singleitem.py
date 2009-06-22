@@ -5,7 +5,7 @@
 import cgitb
 import cgi
 import sqlite3
-from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, getTranType
+from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, getTranType, getItemName
 
 cgitb.enable()
 
@@ -20,8 +20,7 @@ itemId = form['itemId'].value
 
 cursor.execute('SELECT manufacturer,brand,name FROM item WHERE itemId = ?',(itemId))
 (manufacturer,brand,name) = cursor.fetchone()
-if not brand: brand = '-'
-print "<b>Item transactions for %s:%s:%s</b>"%(manufacturer,brand,name)
+print "<b>Item transactions for %s</b>"%getItemName(manufacturer,brand,name)
 
 cursor.execute('''
 SELECT

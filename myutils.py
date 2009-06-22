@@ -260,6 +260,10 @@ def getTranType(type,direction):
     
     return typeDetail
 
+def getItemName(manufacturer,brand,name):
+    if not brand: return '%s %s'%(manufacturer,name)
+    else: return '%s %s %s'%(manufacturer,brand,name)
+    
 def cell(contents):
     return '<TD>%s</TD>'%contents
 

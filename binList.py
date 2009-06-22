@@ -6,7 +6,7 @@ import cgitb
 import cgi
 import sqlite3
 import sys
-from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, gotoButton
+from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, gotoButton, getItemName
 cgitb.enable()
 
 form = cgi.FieldStorage()
@@ -72,10 +72,9 @@ else:
     print "<TABLE BORDER=1 class=listthings>"
     print "<TR><TH>Bin</TH><TH>Item</TH><TH>Quantity</TH></TR>"
     for (binId,itemId,binName,manufacturer,brand,name,number) in binList:
-        if not brand: brand = '-'
         print "<TR>"
         print "<TD>%s</TD>"%binName
-        print "<TD>%s:%s:%s</TD>"%(manufacturer,brand,name)
+        print "<TD>%s</TD>"%getItemName(manufacturer,brand,name)
         print "<TD>%d</TD>"%(number,)
         print "<TD>",gotoButton('Move','moveStock.py?binId=%s&itemId=%s'%(binId,itemId)),"</TD>"
         print "</TR>"

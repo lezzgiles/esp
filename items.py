@@ -5,7 +5,7 @@
 import cgitb
 import cgi
 import sqlite3
-from myutils import sql, printHeader, printFooter
+from myutils import sql, printHeader, printFooter, gotoButton
 
 cgitb.enable()
 
@@ -24,9 +24,9 @@ print '''
 <FORM>
 <H2>Add new item type</H2>
 <table>
-<tr><td align=right>Manufacturer:</td><td><INPUT TYPE=TEXT NAME=manufacturer ID=addItemMfr></INPUT></td></tr>
-<tr><td align=right>Brand:</td><td><INPUT TYPE=TEXT NAME=brand ID=brand></INPUT></td></tr>
-<tr><td align=right>Name:</td><td><INPUT TYPE=TEXT NAME=name ID=name></INPUT></td></tr>
+<tr><td align=right>Manufacturer:</td><td><INPUT TYPE=TEXT NAME=manufacturer ID=addItemMfr SIZE=70></INPUT></td></tr>
+<tr><td align=right>Brand:</td><td><INPUT TYPE=TEXT NAME=brand ID=brand SIZE=70></INPUT></td></tr>
+<tr><td align=right>Name:</td><td><INPUT TYPE=TEXT NAME=name ID=name SIZE=70></INPUT></td></tr>
 <INPUT TYPE=hidden NAME=add VALUE=1/>
 </table>
 <INPUT TYPE=SUBMIT VALUE='Add new item type' onClick='return validateForm();' />
@@ -44,6 +44,29 @@ function validateForm()
 </script>
 '''
 
+######################
+# Handle delete
+if form.has_key('delete'):
+    deleteId = int(form['delete'].value)
+    # First check again that the item is not referenced
+    cursor.execute('SELECT COUNT(*) FROM binItems where itemId = ?',(deleteId,))
+    (count,) = cursor.fetchone()
+    if int(count):
+        print '<p class=error>Item is stored in bins - cannot delete</p>'
+    else:
+        cursor.execute('SELECT COUNT(*) FROM transItem where itemId = ?',(deleteId,))
+        (count,) = cursor.fetchone()
+        if int(count):
+            print '<p class=error>Item is referenced in old transactions - cannot delete</p>'
+        else:
+            try:
+                cursor.execute('DELETE FROM Item WHERE itemId = ?',(deleteId,))
+                c.commit()
+                print '<p class=info>Deleted item</p>'
+            except Exception,e:
+                print '<p class=error>Sorry, something went wrong with the deletion</p>',e
+        
+    
 ######################
 # Handle add
 if form.has_key('add'):
@@ -70,31 +93,56 @@ if form.has_key('add'):
             print "<p class=error>Oops - item %s already exists!</p><br />"%form['name'].value
 
 #######################3
-# Handle delete
-# NO DELETE SINCE OLD SALE & PURCHASE RECORDS WILL POINT TO OLD STOCK
-#if form.has_key('delete'):
-#    print "Got delete"
-#    print "<p class=info>Deleting",form['name'].value,"</p>"
-#    try:
-#        sql = "DELETE FROM item WHERE itemId = ?"
-#        cursor.execute(sql,(form['delete'].value,))
-#        c.commit()
-#        print "Committed"
-#    except:
-#        print "<p class=error>Sorry, something went wrong with the deletion.</p>"
+# Handle edit
+if form.has_key('edit'):
+    try:
+        manufacturer = form['manufacturer'].value
+        if form.has_key('brand'): brand = form['brand'].value
+        else: brand = None
+        name = form['name'].value
+        itemId = form['edit'].value
+        if brand:
+            cursor.execute("UPDATE item SET manufacturer = ?, brand = ?, name = ? WHERE itemId = ?",(manufacturer,brand,name,itemId))
+        else:
+            cursor.execute("UPDATE item SET manufacturer = ?, brand = NULL, name = ? WHERE itemId = ?",(manufacturer,name,itemId))
+        c.commit()
+        print "<p class=info>Item details updated</p>"
+    except Exception,e:
+        print "<p class=error>Sorry, something went wrong with the update.</p>",e
 
 ###################
 # Display list
-cursor.execute("SELECT itemId,manufacturer,brand,name,COUNT(binItems.binId) AS number FROM item LEFT JOIN binItems USING (itemId) GROUP BY itemId ORDER BY manufacturer,brand,name")
+cursor.execute('''
+SELECT itemId,manufacturer,brand,name,SUM(quantity) AS number
+FROM
+    item
+    LEFT JOIN transItem USING (itemId)
+GROUP BY itemId
+ORDER BY manufacturer,brand,name
+''')
 
-print "<TABLE BORDER=1 class=listthings>"
-print "<TR><TH>Mfr</TH><TH>brand</TH><TH>name</TH></TR>"
+print '''
+<TABLE BORDER=1 class=listthings>
+<TR>
+<TH>Mfr</TH>
+<TH>brand</TH>
+<TH>name</TH>
+<TH></TH>
+</TR>
+'''
 for (itemId,manufacturer,brand,name,number) in cursor:
-    print "<TR>"
     if not brand: brand = '-'
-    print "<TD>%s</TD><TD>%s</TD><TD>%s</TD>"%(manufacturer,brand,name)
-    print "</TR>"
-print "</TABLE>"
+    print '<TR>'
+    print '<TD>%s</TD>'%manufacturer
+    print '<TD>%s</TD>'%brand
+    print '<TD>%s</TD>'%name
+    print '<TD>'
+    print gotoButton('Edit','editItem.py?itemId=%s'%itemId)
+    if not number: print gotoButton('Delete','items.py?delete=%s'%itemId)
+    print '</TD>'
+    print '</TR>'
+    
+print '</TABLE>'
 
 print "<SCRIPT LANGUAGE='javascript'>document.getElementById('addItemMfr').focus();</SCRIPT>"
 
