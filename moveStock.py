@@ -4,15 +4,11 @@
 # enable debugging
 import cgitb
 import cgi
-import sqlite3
-from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, cell, getItemName
+from myutils import c,cursor,sql, printHeader, printFooter, printOptions, centsToDollarString, cell, getItemName
 
 cgitb.enable()
 
 form = cgi.FieldStorage()
-
-c = sqlite3.connect('/temp/example')
-cursor = c.cursor()
 
 printHeader('Bin list')
 

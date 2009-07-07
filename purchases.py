@@ -4,14 +4,11 @@
 # enable debugging
 import cgitb
 import cgi
-import sqlite3
-from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getTranType, getItemName
+from myutils import c,cursor,sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getTranType, getItemName
 
 cgitb.enable()
 
 form = cgi.FieldStorage()
-c = sqlite3.connect('/temp/example')
-cursor = c.cursor()
 
 printHeader('Purchases')
 
@@ -99,8 +96,6 @@ addItemRow();
 if form.has_key('AddPurchase'):
     seller = form['seller'].value
     shipping = dollarStringToCents(form['shipping'].value)
-    print "Original is",form['shipping'].value
-    print "Shipping is",shipping
     if form.has_key('reconcile'):
         tranType = 'RECONCILE'
     else:

@@ -3,7 +3,6 @@
 
 # enable debugging
 import cgitb
-import sqlite3
 from myutils import sql,printHeader,printFooter
 
 cgitb.enable()

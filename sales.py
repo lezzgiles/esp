@@ -4,16 +4,12 @@
 # enable debugging
 import cgitb
 import cgi
-import sqlite3
 import sys
-from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getItemName
+from myutils import c,cursor,sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getItemName
 
 cgitb.enable()
 
 form = cgi.FieldStorage()
-
-c = sqlite3.connect('/temp/example',isolation_level='EXCLUSIVE')
-cursor = c.cursor()
 
 printHeader('Sales')
 
@@ -24,7 +20,7 @@ printHeader('Sales')
 cursor.execute("SELECT itemId,manufacturer,brand,name FROM item ORDER BY manufacturer,brand,name")
 itemOptions = []
 for (itemId,manufacturer,brand,name) in cursor:
-    itemOptions.append('<OPTION VALUE=%s></OPTION>'%(itemId,getItemName(manufacturer,brand,name)))
+    itemOptions.append('<OPTION VALUE=%s>%s</OPTION>'%(itemId,getItemName(manufacturer,brand,name)))
     
 #####
 # Add form

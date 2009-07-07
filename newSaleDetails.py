@@ -4,16 +4,12 @@
 # enable debugging
 import cgitb
 import cgi
-import sqlite3
 import sys
-from myutils import sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getItemName
+from myutils import c,cursor,sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getItemName
 
 cgitb.enable()
 
 form = cgi.FieldStorage()
-
-c = sqlite3.connect('/temp/example')
-cursor = c.cursor()
 
 printHeader('New sale details')
 

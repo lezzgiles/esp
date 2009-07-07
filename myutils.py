@@ -3,6 +3,9 @@
 # enable debugging
 import sqlite3
 
+c = sqlite3.connect('/temp/example',isolation_level='EXCLUSIVE')
+cursor = c.cursor()
+
 def sql(c,sql):
     print '<pre>',sql,'</pre>'
     c.cursor().execute(sql)
@@ -29,13 +32,12 @@ div.mainbody {
     border:5px solid darkblue;
     padding: 10px;
     width:820px;
-    align:center;
     background-color:lightblue;
     margin:0 auto;
     width:600px;
     text-align: left;
 }
-div.navibar {text-align: center}
+div.navibar {text-align: left}
 div.addthing {
     background-color:lightgreen;
     border: 2px groove darkgreen;
@@ -61,7 +63,7 @@ function moneyFormat(textObj) {
       aChar = newValue.substring(i,i+1);
       if(aChar >= "0" && aChar <= "9") {
          if(decFlag) {
-            decAmount = "" + decAmount + aChar;
+           decAmount = "" + decAmount + aChar;
          }
          else {
             dolAmount = "" + dolAmount + aChar;
@@ -114,7 +116,7 @@ function moneyFormat(textObj) {
    }
    if(decAmount.length == 0) {
       decAmount = decAmount + "00";
-   }
+  }
    
    // Check for negative values and reset textObj
    if(newValue.substring(0,1) != '-' ||
@@ -261,6 +263,9 @@ def getTranType(type,direction):
     return typeDetail
 
 def getItemName(manufacturer,brand,name):
+    manufacturer = manufacturer.replace("'","\\'")
+    if brand: brand = brand.replace("'","\\'")
+    name = name.replace("'","\\'")
     if not brand: return '%s %s'%(manufacturer,name)
     else: return '%s %s %s'%(manufacturer,brand,name)
     

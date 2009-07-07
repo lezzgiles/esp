@@ -4,15 +4,11 @@
 # enable debugging
 import cgitb
 import cgi
-import sqlite3
-from myutils import sql, printHeader, printFooter, printOptions, centsToDollarString, getTranType, getItemName
+from myutils import c,cursor,sql, printHeader, printFooter, printOptions, centsToDollarString, getTranType, getItemName
 
 cgitb.enable()
 
 form = cgi.FieldStorage()
-
-c = sqlite3.connect('/temp/example')
-cursor = c.cursor()
 
 printHeader('Stock detail')
 
@@ -33,7 +29,7 @@ WHERE
 ORDER BY tranDate DESC
 ''',(itemId,))
 print "<TABLE BORDER=1 class=listthings><TR>"
-print "<TH>Purchase date</TH>"
+print "<TH>Date</TH>"
 print "<TH>Type</TH>"
 print "<TH>Party</TH>"
 print "<TH>Quantity</TH>"

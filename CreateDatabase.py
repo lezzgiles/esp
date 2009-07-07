@@ -4,7 +4,7 @@
 # enable debugging
 import cgitb
 import sqlite3
-from myutils import sql
+from myutils import c,cursor,sql
 
 cgitb.enable()
 
@@ -58,6 +58,6 @@ sqlStatements = (
     itemId INTEGER NOT NULL,
     quantity INTEGER NOT NULL
 )''')
-c = sqlite3.connect('/temp/example')
+
 for stmt in sqlStatements: sql(c,stmt)
 print '<HR>'

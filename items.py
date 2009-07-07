@@ -4,18 +4,13 @@
 # enable debugging
 import cgitb
 import cgi
-import sqlite3
-from myutils import sql, printHeader, printFooter, gotoButton
+from myutils import c,cursor,sql, printHeader, printFooter, gotoButton
 
 cgitb.enable()
 
 form = cgi.FieldStorage()
 
-c = sqlite3.connect('/temp/example')
-cursor = c.cursor()
-
 printHeader('Item Management')
-
 
 ####################
 # Add form
