@@ -22,6 +22,7 @@ if form.has_key('moveStock'):
         for i in range(2,tableSize+1):
             binId = form['addBin-'+str(i)].value
             binQty = int(form['addQty-'+str(i)].value)
+            if binQty == 0: continue
             totalToMove += binQty
             moveDetails.append([binId,binQty])
 
@@ -54,11 +55,29 @@ FROM
     INNER JOIN BinItems using (binId)
     INNER JOIN Item USING (itemId)
 GROUP BY binId,itemId
-ORDER BY Item.manufacturer,Item.brand,Item.name
 ''')
 
 binList = []
 for binDetails in cursor: binList.append(binDetails)
+
+# Sort the list by words
+def sortLists(a,b):
+    matchLength = min((len(a),len(b)))
+    for i in range(matchLength):
+        if a[i] == b[i]: continue
+        try:
+            return int(a[i]) - int(b[i])
+        except:
+            pass
+        if a[i] > b[i]: return 1
+        if a[i] < b[i]: return -1
+    return 0
+
+def nameToList(a):
+    (binId,itemId,binName,itemMfr,itemBrand,itemName,qty) = a
+    return binName.split()
+
+binList.sort(sortLists,nameToList)
 
 if len(binList) == 0:
     print "<H2>You don't have any stock</H2>"

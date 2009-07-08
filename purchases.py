@@ -109,6 +109,7 @@ if form.has_key('AddPurchase'):
         if form.has_key('addItem-'+str(i)):
             itemId = form['addItem-'+str(i)].value
             quantity = form['quantity-'+str(i)].value
+            if int(quantity) == 0: continue
             pricePerItem = dollarStringToCents(form['pricePerItem-'+str(i)].value)
             cursor.execute('INSERT INTO TransItem (tranId,itemId,quantity,pricePerItem) VALUES (?,?,?,?)',
                            (tranId,itemId,quantity,pricePerItem))

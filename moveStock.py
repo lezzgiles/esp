@@ -59,6 +59,7 @@ for (thisBinId,name,slots,used) in cursor:
 print '<SCRIPT LANGUAGE=JavaScript>'
 print 'binsWithSpaces = new Array();'
 for (thisBinId,name,slots) in toBins:
+    if not slots: slots = 99999
     print 'binsWithSpaces[%s] = {name: "%s", slots: %s};'%(thisBinId,name,slots)
 
 print '</SCRIPT>'
