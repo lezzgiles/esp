@@ -80,7 +80,7 @@ print '''
 <P>
 <INPUT TYPE=hidden NAME=moveStock VALUE=1 />
 <INPUT TYPE=hidden ID=tableSize NAME=tableSize VALUE=0 />
-<INPUT TYPE=submit VALUE='Move stock' />
+<INPUT TYPE=submit VALUE='Move stock' onClick='return validateForm();' />
 </p>
 </FORM>
 
@@ -116,5 +116,23 @@ function addBinRow()
     }
     document.getElementById('tableSize').value = thisRow;
 }
+
+function validateForm()
+{
+    remainingNumber = document.getElementById('moved').value;
+    if (remainingNumber == 1) {
+        alert('There is still one item to be moved!');
+        return false;
+    } else if (remainingNumber > 0) {
+        alert('There are still '+remainingNumber+' items to be moved!');
+        return false;
+    } else if (remainingNumber < 0) {
+        alert('Somehow you have moved too many items - you may need to reload the page and start all over again.');
+        return false;
+    } else {
+        return true;
+    }
+}
+
 </SCRIPT>'''
 printFooter()    
