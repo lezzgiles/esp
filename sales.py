@@ -129,7 +129,8 @@ if form.has_key('addSale'):
                 if foundQty < qty:
                     raise ValueError,'<p class=error>Database changed - needed %d items but only found %d - aborting sale</p>'%(qty,foundQty)
                 cursor.execute('DElETE FROM binItems WHERE binId = ? AND itemId = ?',(binId,itemId))
-                cursor.execute('INSERT INTO binItems (binId,itemId,quantity) VALUES (?,?,?)',(binId,itemId,foundQty-qty))
+                if foundQty != qty:
+                    cursor.execute('INSERT INTO binItems (binId,itemId,quantity) VALUES (?,?,?)',(binId,itemId,foundQty-qty))
                 
             cursor.execute('INSERT INTO TransItem (tranId,itemId,quantity,pricePerItem) VALUES (?,?,?,?)',
                            (tranId,itemId,totalQuantity,pricePerItem))

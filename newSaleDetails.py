@@ -39,7 +39,7 @@ for i in range(1,int(maxItemIdx)+1):
         itemId = form['addItem-'+str(i)].value
         quantity = form['quantity-'+str(i)].value
         pricePerItem = dollarStringToCents(form['pricePerItem-'+str(i)].value)
-        cursor.execute('SELECT manufacturer,brand,name FROM Item WHERE itemId = ?',(itemId))
+        cursor.execute('SELECT manufacturer,brand,name FROM Item WHERE itemId = ?',(itemId,))
         (mfg,brand,name) = cursor.fetchone()
         print "<H3>Item %s</H3>"%getItemName(mfg,brand,name)
 
@@ -52,7 +52,7 @@ FROM
     INNER JOIN Item USING (ItemId)
 WHERE ItemId = ?
 GROUP BY binId
-    ''',(itemId))
+    ''',(itemId,))
 
         totalFound = 0
         bins = []
@@ -73,9 +73,9 @@ GROUP BY binId
         for (binId,binName,binQuantity) in bins:
             print '<TR>'
             print '<TD>%s<INPUT TYPE=HIDDEN NAME=id-%s-%d VALUE=%s></TD>'%(binName,itemId,thisRow,binId)
-            print '<TD><INPUT TYPE=TEXT SIZE=4 ID=avail-%d VALUE=%d /></TD>'%(thisRow,binQuantity)
+            print '<TD><INPUT TYPE=TEXT SIZE=4 ID=avail-%s-%s VALUE=%d /></TD>'%(itemId,thisRow,binQuantity)
             print '<TD>'
-            print "<SCRIPT LANGUAGE=JAVASCRIPT>document.write(incIncDecField('qty-%s-%s',%d,'moved-%s','avail-%d'));</SCRIPT>"%(itemId,thisRow,binQuantity,itemId,thisRow)
+            print "<SCRIPT LANGUAGE=JAVASCRIPT>document.write(incIncDecField('qty-%s-%s',%d,'moved-%s','avail-%s-%s'));</SCRIPT>"%(itemId,thisRow,binQuantity,itemId,itemId,thisRow)
             print '</TD>'
             print '</TR>'
             thisRow += 1

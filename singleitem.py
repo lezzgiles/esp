@@ -14,7 +14,7 @@ printHeader('Stock detail')
 
 itemId = form['itemId'].value
 
-cursor.execute('SELECT manufacturer,brand,name FROM item WHERE itemId = ?',(itemId))
+cursor.execute('SELECT manufacturer,brand,name FROM item WHERE itemId = ?',(itemId,))
 (manufacturer,brand,name) = cursor.fetchone()
 print "<b>Item transactions for %s</b>"%getItemName(manufacturer,brand,name)
 

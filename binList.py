@@ -30,20 +30,23 @@ if form.has_key('moveStock'):
         delItem= form['delItem'].value
 
         cursor.execute('SELECT SUM(quantity) FROM binItems WHERE binId = ? and itemId = ? GROUP BY binId',(delBin,delItem))
-        (foundQty) = cursor.fetchone()
+        (foundQty,) = cursor.fetchone()
 
         if foundQty < totalToMove:
            raise ValueError, "<p class=error>Didn't find enough items to move</p>"
 
         cursor.execute('DELETE FROM binItems WHERE binId = ? and itemId = ?',(delBin,delItem))
 
-        
         for (binId,binQty) in moveDetails:
             cursor.execute('INSERT INTO binItems (binId,itemId,quantity) VALUES (?,?,?)',(binId,delItem,binQty))
+
+        if foundQty > totalToMove:
+            cursor.execute('INSERT INTO binItems (binId,itemId,quantity) VALUES (?,?,?)',(delBin,delItem,foundQty-totalToMove))
             
         c.commit()
 
     except Exception,e:
+        c.rollback()
         print "<p class=error>Problem with database update:</p><pre>",sys.exc_info(),"</pre>"
     
 #########################################    
@@ -62,6 +65,9 @@ for binDetails in cursor: binList.append(binDetails)
 
 # Sort the list by words
 def sortLists(a,b):
+    # if either is 'unstocked', it comes first
+    if a[0] == 'unstocked': return -1
+    if b[0] == 'unstocked': return 1
     matchLength = min((len(a),len(b)))
     for i in range(matchLength):
         if a[i] == b[i]: continue

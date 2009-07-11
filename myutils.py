@@ -151,6 +151,7 @@ function incincdec(inc1,incMax,inc2,dec)
     incValue1 = incField1.value;
     incValue2 = incField2.value;
     decValue = decField.value;
+    //alert('incValue1 '+incField1.id+' '+incValue1+'\\nincValue2 '+incField2.id+' '+incValue2+'\\ndecValue '+decField.id+' '+decValue+'\\nincMax '+incMax);
     incValue1++;
     incValue2++;
     decValue--;

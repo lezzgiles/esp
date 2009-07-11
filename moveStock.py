@@ -80,7 +80,7 @@ print '''
 <P>
 <INPUT TYPE=hidden NAME=moveStock VALUE=1 />
 <INPUT TYPE=hidden ID=tableSize NAME=tableSize VALUE=0 />
-<INPUT TYPE=submit VALUE='Move stock' onClick='return validateForm();' />
+<INPUT TYPE=submit VALUE='Move stock' />
 </p>
 </FORM>
 
@@ -114,24 +114,33 @@ function addBinRow()
             selectList.options[option].disabled = true;
         }
     }
-    document.getElementById('tableSize').value = thisRow;
-}
-
-function validateForm()
-{
-    remainingNumber = document.getElementById('moved').value;
-    if (remainingNumber == 1) {
-        alert('There is still one item to be moved!');
-        return false;
-    } else if (remainingNumber > 0) {
-        alert('There are still '+remainingNumber+' items to be moved!');
-        return false;
-    } else if (remainingNumber < 0) {
-        alert('Somehow you have moved too many items - you may need to reload the page and start all over again.');
-        return false;
+    if (selectList.length == 1) {
+        // If there is only one element, deselect
+        selectList.selectedIndex = -1;
     } else {
-        return true;
+        // Look for an enabled option by starting at the current one
+        // and working to the end, then starting at the current one
+        // and working to the beginning.  If there are no enabled
+        // options, simply deselect.
+        try {
+            for (var i = selectList.selectedIndex+1; i < selectList.length; i++) {
+                if (selectList.options[i].disabled == false) {
+                    selectList.selectedIndex = i;
+                    throw 'found enabled option';
+                }
+            }
+            for (i = selectList.selectedIndex-1; i >= 0; i--) {
+                if (selectList.options[i].disabled == false) {
+                    selectList.selectedIndex = i;
+                    throw 'found enabled option';
+                }
+            }
+        }
+        catch (ex) {
+            ;
+        }
     }
+    document.getElementById('tableSize').value = thisRow;
 }
 
 </SCRIPT>'''
