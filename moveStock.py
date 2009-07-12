@@ -91,7 +91,11 @@ selectList = document.getElementById('addBinId');
 for (binId in binsWithSpaces) {
     thisBin = binsWithSpaces[binId];
     option = document.createElement('option');
-    option.text = thisBin.name;
+    if (thisBin.slots == 99999) {
+        option.text = thisBin.name;
+    } else {
+        option.text = thisBin.name + ' (' + thisBin.slots + ')';
+    }
     option.value = binId;
     selectList.add(option,null);
 }
