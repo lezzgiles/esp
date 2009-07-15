@@ -88,7 +88,7 @@ binList.sort(sortLists,nameToList)
 if len(binList) == 0:
     print "<H2>You don't have any stock</H2>"
 else:
-    print "<TABLE BORDER=1 class=listthings>"
+    print "<TABLE BORDER=1 class='listthings sortable'>"
     print "<TR><TH>Bin</TH><TH>Item</TH><TH>Quantity</TH></TR>"
     for (binId,itemId,binName,manufacturer,brand,name,number) in binList:
         print "<TR>"

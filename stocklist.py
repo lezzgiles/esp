@@ -28,7 +28,8 @@ for itemDetails in cursor: stockList.append(itemDetails)
 if len(stockList) == 0:
     print "<H2>You don't have any stock</H2>"
 else:
-    print "<TABLE BORDER=1 class=listthings>"
+    print "<TABLE BORDER=1 class='listthings sortable'>"
+    print "<TR><TH>Item</TH><TH>Qty</TH></TR>"
     for (itemId,manufacturer,brand,name,number) in stockList:
         print "<TR>"
         print "<TD><A HREF=singleitem.py?itemId=%s>%s</A></TD>"%(itemId,getItemName(manufacturer,brand,name))

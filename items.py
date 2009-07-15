@@ -5,6 +5,7 @@
 import cgitb
 import cgi
 from myutils import c,cursor,sql, printHeader, printFooter, gotoButton
+import sqlite3
 
 cgitb.enable()
 
@@ -64,23 +65,26 @@ if form.has_key('delete'):
     
 ######################
 # Handle add
+addManufacturer = None
+addBrand = None
 if form.has_key('add'):
-    if form.has_key('brand'): brand = form['brand'].value
-    else: brand = None
+    if form.has_key('brand'): addBrand = form['brand'].value
+    else: addBrand = None
     
     if not form.has_key('manufacturer'):
         print "<p class=error>Oops - you must fill in the manufacturer</p>"
     elif not form.has_key('name'):
         print "<p class=error>Oops - you must fill in the name</p>"
     else:
+        addManufacturer = form['manufacturer'].value
         try:
-            if brand:
-                details = (form['manufacturer'].value,brand,form['name'].value)
+            if addBrand:
+                details = (addManufacturer,addBrand,form['name'].value)
                 sql = "INSERT INTO item (manufacturer,brand,name) VALUES (?,?,?)"
                 cursor.execute(sql,details)
                 c.commit()
             else:
-                details = (form['manufacturer'].value,form['name'].value)
+                details = (addManufacturer,form['name'].value)
                 sql = "INSERT INTO item (manufacturer,name) VALUES (?,?)"
                 cursor.execute(sql,details)
                 c.commit()
@@ -117,7 +121,7 @@ ORDER BY manufacturer,brand,name
 ''')
 
 print '''
-<TABLE BORDER=1 class=listthings>
+<TABLE BORDER=1 class='listthings sortable'>
 <TR>
 <TH>Mfr</TH>
 <TH>brand</TH>
@@ -139,6 +143,22 @@ for (itemId,manufacturer,brand,name,number) in cursor:
     
 print '</TABLE>'
 
-print "<SCRIPT LANGUAGE='javascript'>document.getElementById('addItemMfr').focus();</SCRIPT>"
+
+print "<SCRIPT LANGUAGE='javascript'>"
+print "var manufacturer = '%s';"%(addManufacturer or '')
+print "var brand = '%s';"%(addBrand or '')
+print '''
+mfgr = document.getElementById('addItemMfr');
+if (manufacturer) {
+    document.getElementById('addItemMfr').value = manufacturer;
+    if (brand) {
+        document.getElementById('brand').value = brand;
+    }
+    document.getElementById('name').focus();
+} else {
+    document.getElementById('addItemMfr').focus();
+    }
+</SCRIPT>
+'''
 
 printFooter()

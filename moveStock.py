@@ -72,7 +72,7 @@ print '<p>You have <INPUT TYPE=text CLASS=number READONLY ID=moved VALUE=%s SIZE
 print '<INPUT TYPE=hidden NAME=delBin VALUE=%s />'%binId
 print '<INPUT TYPE=hidden NAME=delItem VALUE=%s />'%itemId
 print '''
-<TABLE BORDER=1 ID=movelist>
+<TABLE BORDER=1 ID=movelist CLASS="sortable">
 <TR><TH>Move to bin</TH><TH>Qty</TH></TR>
 </TABLE>
 <SELECT ID=addBinId></SELECT>

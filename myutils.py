@@ -49,6 +49,7 @@ table.listthings {
     margin:20px;
 }
 </style>
+<script src="/js/sorttable.js"></script>
 <script language= "JavaScript">
 <!--begin script
 function moneyFormat(textObj) {

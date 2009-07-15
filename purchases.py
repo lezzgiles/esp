@@ -128,7 +128,7 @@ GROUP BY tranId
 ORDER BY tranDate DESC
 ''')
 
-print "<TABLE BORDER=1 class=listthings>"
+print "<TABLE BORDER=1 class='listthings sortable'>"
 print "<TR><TH>Type</TH><TH>Date</TH><TH>Seller</TH><TH>Total cost</TH><TH></TH></TR>"
 for (tranId,type,direction,tranDate,seller,shipping,totalCost) in cursor:
     typeDetail = getTranType(type,direction)

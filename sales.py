@@ -151,7 +151,7 @@ GROUP BY tranId
 ORDER BY tranDate DESC
 ''')
 
-print "<TABLE BORDER=1 class=listthings>"
+print "<TABLE BORDER=1 class='listthings sortable'>"
 print "<TR><TH>Type</TH><TH>Date</TH><TH>Buyer</TH><TH>Total cost</TH><TH></TH></TR>"
 for (tranId,type,direction,tranDate,buyer,shipping,totalCost) in cursor:
     if type == 'REAL':

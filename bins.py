@@ -64,7 +64,7 @@ if form.has_key('delete'):
 # Display list
 cursor.execute("SELECT binId,name,slots,COUNT(binItems.itemId) AS number FROM bin LEFT JOIN binItems USING (binId) GROUP BY binId ORDER BY name")
 
-print "<TABLE border=1 class=listthings><TR><TH>Bin name</TH><TH>slots</TH><TH></TH></TR>"
+print "<TABLE border=1 class='listthings sortable'><TR><TH>Bin name</TH><TH>slots</TH><TH></TH></TR>"
 for (binId,name,slots,number) in cursor:
     if not slots:
         slots = "Unlimited"
