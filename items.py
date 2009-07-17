@@ -138,6 +138,7 @@ for (itemId,manufacturer,brand,name,number) in cursor:
     print '<TD>'
     print gotoButton('Edit','editItem.py?itemId=%s'%itemId)
     if not number: print gotoButton('Delete','items.py?delete=%s'%itemId)
+    print gotoButton('Transactions','singleItem.py?itemId=%s'%itemId)
     print '</TD>'
     print '</TR>'
     

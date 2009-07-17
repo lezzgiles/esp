@@ -148,9 +148,9 @@ sorttable = {
 	          row_array[row_array.length] = [sorttable.getInnerText(rows[j].cells[col]), rows[j]];
 	        }
 	        /* If you want a stable sort, uncomment the following line */
-	        //sorttable.shaker_sort(row_array, this.sorttable_sortfunction);
+	        sorttable.shaker_sort(row_array, this.sorttable_sortfunction);
 	        /* and comment out this one */
-	        row_array.sort(this.sorttable_sortfunction);
+	        //row_array.sort(this.sorttable_sortfunction);
 	        
 	        tb = this.sorttable_tbody;
 	        for (var j=0; j<row_array.length; j++) {
@@ -264,9 +264,28 @@ sorttable = {
     return aa-bb;
   },
   sort_alpha: function(a,b) {
-    if (a[0]==b[0]) return 0;
-    if (a[0]<b[0]) return -1;
-    return 1;
+    //if (a[0]==b[0]) return 0;
+    //if (a[0]<b[0]) return -1;
+    //return 1;
+    // Modified to sort by list of words, sorted numerically if they are numbers
+    aWords = a[0].split(/\s+/);
+    bWords = b[0].split(/\s+/);
+    for (var i=0; ; i++) {
+      if (aWords.length < i) {
+        if (aWords.length == bWords.length) return 0;
+        return 1;
+      }
+      if (bWords.length < i) return -1;
+      if (aWords[i] == bWords[i]) continue;
+      aValue = parseInt(aWords[i]);
+      bValue = parseInt(bWords[i]);
+      if (!isNaN(aValue) && !isNaN(bValue)) {
+        if (aValue == bValue) continue;
+        return aValue - bValue
+      }
+      if (aWords[i]<bWords[i]) return -1;
+      return 1;
+    }
   },
   sort_ddmm: function(a,b) {
     mtch = a[0].match(sorttable.DATE_RE);
