@@ -30,6 +30,7 @@ def printHeader(header):
 
 def printFooter():
     printNavigation()
+    print "</div>"
     print "</BODY>"
     print "</HTML>"
 

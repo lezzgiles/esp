@@ -10,10 +10,9 @@ input.money {text-align:right}
 div.mainbody {
     border:5px solid darkblue;
     padding: 10px;
-    width:820px;
+    // width:820px;
+    float: left;
     background-color:lightblue;
-    margin:0 auto;
-    width:600px;
     text-align: left;
 }
 div.navibar {text-align: left}

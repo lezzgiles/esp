@@ -20,7 +20,13 @@ print "<b>Item transactions for %s</b>"%getItemName(manufacturer,brand,name)
 
 cursor.execute('''
 SELECT
-    TransItem.quantity,TransItem.pricePerItem,tranDate,type,direction,description
+    TransItem.quantity,
+    TransItem.pricePerItem,
+    tranDate,
+    type,
+    direction,
+    description,
+    shipping*priceperitem/(SELECT SUM(quantity*priceperitem) FROM transitem WHERE tranid = trans.tranid)
 FROM
     transItem
     INNER JOIN Trans USING (tranId)
@@ -32,10 +38,12 @@ print "<TABLE BORDER=1 class=listthings><TR>"
 print "<TH>Date</TH>"
 print "<TH>Type</TH>"
 print "<TH>Party</TH>"
-print "<TH>Quantity</TH>"
+print "<TH>Qty</TH>"
 print "<TH>Price/item</TH>"
+print "<TH>Prorated<br />shipping</TH>"
+print "<TH>Total<br />per unit</TH>"
 print "</TR>"
-for (quantity,pricePerItem,purchaseDate,type,direction,description) in cursor:
+for (quantity,pricePerItem,purchaseDate,type,direction,description,proratedShipping) in cursor:
     tranType = getTranType(type,direction)
     print "<TR>"
     print "<TD>%s</TD>"%purchaseDate
@@ -43,6 +51,8 @@ for (quantity,pricePerItem,purchaseDate,type,direction,description) in cursor:
     print "<TD>%s</TD>"%description
     print "<TD>%d</TD>"%quantity
     print "<TD>%s</TD>"%centsToDollarString(pricePerItem)
+    print "<TD>%s</TD>"%centsToDollarString(proratedShipping)
+    print "<TD>%s</TD>"%centsToDollarString(pricePerItem+proratedShipping)
     print "</TR>"
 print "</TABLE>"
 

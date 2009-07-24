@@ -22,24 +22,40 @@ mytype = getTranType(type,direction)
 print '<H2>Details for %s: %s</H2>'%(mytype,description)
 print '<p>Date: %s</p>'%tranDate
 
-cursor.execute('SELECT manufacturer,brand,name,quantity,pricePerItem FROM TransItem LEFT JOIN Item USING (itemId) WHERE tranId = ?',
-               (tranId,))
+sql = '''
+SELECT
+    manufacturer,
+    brand,
+    name,
+    quantity,
+    pricePerItem,
+    shipping*priceperitem/(SELECT SUM(quantity*priceperitem) FROM transitem WHERE tranid = trans.tranid)
+FROM
+    TransItem
+    LEFT JOIN Item USING (itemId)
+    LEFT JOIN Trans ON transItem.tranId = Trans.tranid
+    WHERE transitem.tranId = ?
+'''
 
-print '<TABLE BORDER=1><TR><TH>Item</TH><TH>qty</TH><TH>unit price</TH><TH>tot price</TH>'
+cursor.execute(sql,(tranId,))
+
+print '<TABLE BORDER=1><TR><TH>Item</TH><TH>qty</TH><TH>unit price</TH><TH>prorated shipping</TH><TH>total per unit</TH><TH>tot price w/o shipping</TH></TR>'
 totalPrice = 0
-for (manufacturer,brand,name,quantity,pricePerItem) in cursor:
+for (manufacturer,brand,name,quantity,pricePerItem,proratedShipping) in cursor:
     itemsTotalPrice = (int(quantity)*int(pricePerItem))
     totalPrice += itemsTotalPrice
     print '<TR>'
     print cell(getItemName(manufacturer,brand,name))
     print cell(quantity)
     print moneyCell(pricePerItem)
+    print moneyCell(proratedShipping)
+    print moneyCell(proratedShipping+pricePerItem)
     print moneyCell(itemsTotalPrice)
     print '</TR>'
 
-print "<TR><TD COLSPAN=3 ALIGN=RIGHT>Shipping:</TD>",moneyCell(shipping),"</TR>"
+print "<TR><TD COLSPAN=5 ALIGN=RIGHT>Shipping:</TD>",moneyCell(shipping),"</TR>"
 totalPrice += shipping
-print "<TR><TD COLSPAN=3 ALIGN=RIGHT><b>Total:</b></TD>",moneyCell(totalPrice),"</TR>"
+print "<TR><TD COLSPAN=5 ALIGN=RIGHT><b>Total:</b></TD>",moneyCell(totalPrice),"</TR>"
 print "</TABLE>"
 
 
