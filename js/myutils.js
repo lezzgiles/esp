@@ -130,16 +130,16 @@ function decdecinc(dec1,dec2,inc)
 function incDecField(id,max,otherId)
 {
     retval = "<INPUT TYPE=TEXT CLASS=number NAME="+id+" READONLY ID="+id+" VALUE=0 SIZE=2 />";
-    retval = retval + "<INPUT TYPE=button onClick='incdec(\\\""+id+"\\\","+max+",\\\""+otherId+"\\\");' VALUE=+>";
-    retval = retval + "<INPUT TYPE=button onClick='incdec(\\\""+otherId+"\\\",0,\\\""+id+"\\\");' VALUE=->";
+    retval = retval + "<INPUT TYPE=button onClick='incdec(\""+id+"\","+max+",\""+otherId+"\");' VALUE=+>";
+    retval = retval + "<INPUT TYPE=button onClick='incdec(\""+otherId+"\",0,\""+id+"\");' VALUE=->";
     return retval;
 }
 
 function incIncDecField(id,max,inc2,dec)
 {
     retval = "<INPUT TYPE=TEXT CLASS=number NAME="+id+" READONLY ID="+id+" VALUE=0 SIZE=2 />";
-    retval = retval + "<INPUT TYPE=button onClick='incincdec(\\\""+id+"\\\","+max+",\\\""+inc2+"\\\",\\\""+dec+"\\\");' VALUE=+>";
-    retval = retval + "<INPUT TYPE=button onClick='decdecinc(\\\""+id+"\\\",\\\""+inc2+"\\\",\\\""+dec+"\\\");' VALUE=->";
+    retval = retval + "<INPUT TYPE=button onClick='incincdec(\""+id+"\","+max+",\""+inc2+"\",\""+dec+"\");' VALUE=+>";
+    retval = retval + "<INPUT TYPE=button onClick='decdecinc(\""+id+"\",\""+inc2+"\",\""+dec+"\");' VALUE=->";
     return retval;
 }
 

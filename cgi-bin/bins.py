@@ -21,8 +21,8 @@ print "<table>"
 print "<tr><td align=right>Bin name:</td><td><INPUT TYPE=TEXT NAME=name ID=addBinName></INPUT></td></tr>"
 print "<tr><td align=right>Number of slots:</td><td><SELECT name=slots>"
 print "<OPTION VALUE=0 DEFAULT>Unlimited</OPTION>"
-for i in range(1,7):
-    print "<OPTION VALUE=%d>%d</OPTION>"%(i,i)
+print "<OPTION VALUE=6 DEFAULT>6</OPTION>"
+print "<OPTION VALUE=17 DEFAULT>17</OPTION>"
 print "</SELECT><tr><td align=right>"
 print "</table>"
 print "<INPUT TYPE=hidden NAME=add VALUE=1/>"
