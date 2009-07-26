@@ -5,12 +5,12 @@ body  {
 
 p.error {color:red;font-weight:bold}
 p.info {font-weight:bold}
+tr.error {background-color:red}
 td.money {text-align:right}
 input.money {text-align:right}
 div.mainbody {
     border:5px solid darkblue;
     padding: 10px;
-    // width:820px;
     float: left;
     background-color:lightblue;
     text-align: left;

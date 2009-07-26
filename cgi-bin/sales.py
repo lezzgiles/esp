@@ -148,7 +148,7 @@ FROM Trans
 LEFT JOIN TransItem USING (tranId)
 WHERE direction == 'DEL'
 GROUP BY tranId
-ORDER BY tranDate DESC
+ORDER BY tranDate DESC, tranid DESC
 ''')
 
 print "<TABLE BORDER=1 class='listthings sortable'>"
