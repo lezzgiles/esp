@@ -35,7 +35,7 @@ def printFooter():
     print "</HTML>"
 
 def gotoButton(name,url):
-    return "<INPUT TYPE=button onClick='location.href=\"%s\"' VALUE='%s' />"%(url,name)
+    return "<INPUT TYPE=button onClick='this.disabled = true; location.href=\"%s\"' VALUE='%s' />"%(url,name)
 
 def printNavigation():
     print '<div class=navibar>'
