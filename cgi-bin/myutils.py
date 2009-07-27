@@ -45,7 +45,7 @@ def printNavigation():
     print gotoButton('Stock list','stockList.py')
     print gotoButton('Bin list','binList.py')
     print gotoButton('Ebay Listings','ebayListing.py')
-    print gotoButton('Ebay Missing','ebayMissing.py')
+    print gotoButton('Ebay Unlisted','ebayMissing.py')
     print '<br />'
     print gotoButton('Bin management','bins.py')
     print gotoButton('Item type management','items.py')
@@ -58,6 +58,7 @@ def printOptions(label,field,valueList):
     print '</SELECT>'
 
 def centsToDollarString(cents):
+    if not cents: return '0.00'
     dollars = cents // 100
     cents = cents % 100
     return "$%d.%02d"%(dollars,cents)

@@ -42,6 +42,7 @@ cursor.execute(sql,(tranId,))
 print '<TABLE BORDER=1><TR><TH>Item</TH><TH>qty</TH><TH>unit price</TH><TH>prorated shipping</TH><TH>total per unit</TH><TH>tot price w/o shipping</TH></TR>'
 totalPrice = 0
 for (manufacturer,brand,name,quantity,pricePerItem,proratedShipping) in cursor:
+    if not proratedShipping: proratedShipping = 0
     itemsTotalPrice = (int(quantity)*int(pricePerItem))
     totalPrice += itemsTotalPrice
     print '<TR>'

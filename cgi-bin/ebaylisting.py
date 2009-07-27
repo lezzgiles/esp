@@ -72,6 +72,7 @@ def buildRequestXml(pageNo,number):
               "<OutputSelector>ItemArray.Item.Quantity</OutputSelector>" + \
               "<OutputSelector>ItemArray.Item.Title</OutputSelector>" + \
               "<OutputSelector>ItemArray.Item.SellingStatus.ListingStatus</OutputSelector>" + \
+              "<OutputSelector>ItemArray.Item.SellingStatus.QuantitySold</OutputSelector>" + \
               "<Pagination>"+\
                  "<EntriesPerPage>%d</EntriesPerPage>"%number+\
                  "<PageNumber>%d</PageNumber>"%pageNo+\
@@ -123,6 +124,8 @@ def getPage(connection,pageNo,number,itemList):
                 title = getText(item.getElementsByTagName('Title')[0].childNodes)
                 quantity = getText(item.getElementsByTagName('Quantity')[0].childNodes)
                 listingStatus = getText(item.getElementsByTagName('ListingStatus')[0].childNodes)
+                quantitySold = getText(item.getElementsByTagName('QuantitySold')[0].childNodes)
+                quantity = int(quantity) - int(quantitySold)
                 if listingStatus == 'Active':
                     itemList.append([title,quantity])
 
@@ -201,22 +204,42 @@ ORDER BY
     title''')
 
 print "<TABLE BORDER=1 class='listthings sortable'>"
-print "<TR><TH>Ebay Title</TH><TH>Listed<br />Qty</TH><TH>Item</TH><TH>Stock<br />Qty</TH></TR>"
+print "<TR><TH>Ebay Title</TH><TH>Listed<br />Qty</TH><TH>Item</TH><TH>Stock<br />Qty</TH><TH>Dup</TH></TR>"
 count = 0
+itemsSeen = {}
+results = []
+duplicates = {}
 for (title,listQty,mfr,brand,name,gotQty) in cursor:
+    if mfr:
+        itemName = getItemName(mfr,brand,name)
+        if itemName in itemsSeen:
+            duplicates[itemName] = True
+        itemsSeen[itemName] = True
+    else:
+        itemName = None
+    results.append((title,listQty,itemName,gotQty))
+    
+for (title,listQty,itemName,gotQty) in results:
     count += 1
     if not gotQty:
         rowClass = 'CLASS=warning'
-    elif listQty != gotQty:
+    elif listQty > gotQty:
         rowClass = 'CLASS=error'
+    elif listQty != gotQty:
+        rowClass = 'CLASS=warning'
     else:
         rowClass = ''
-    if mfr == None:
-        linkCells = '<TD COLSPAN=2>'+gotoButton('Link item to stock','linkEbay2Stock.py?title=%s'%urllib.quote_plus(title))+'</TD>'
-        #linkCells = '<TD COLSPAN=2>'+gotoButton('Link item to stock','linkEbay2Stock.py?title=fred')+'</TD>'
+    if itemName == None:
+        linkCells = '<TD>'+gotoButton('Link item to stock','linkEbay2Stock.py?title=%s'%urllib.quote_plus(title))+'</TD><TD> </TD>'
+        seenCell = ''
     else:
-        linkCells = '<TD>'+getItemName(mfr,brand,name)+'</TD><TD>'+str(gotQty)+'</TD>'
-    print "<TR %s><TD>%s</TD><TD>%s</TD>%s</TR>"%(rowClass,title,listQty,linkCells)
+        linkCells = '<TD>'+itemName+'</TD><TD>'+str(gotQty)+'</TD>'        
+        if itemName in duplicates:
+            seenCell = 'X'
+        else:
+            seenCell = ''
+    
+    print "<TR %s><TD>%s</TD><TD>%s</TD>%s<TD>%s</TD></TR>"%(rowClass,title,listQty,linkCells,seenCell)
 print "</TABLE>"
 print "<p><i>%d entries</i></p>"%count
 printFooter()
