@@ -15,7 +15,7 @@ printHeader('Unlisted items')
 print '<p>This page lists items that are not listed on Ebay, or that are not linked to an Ebay item.</p>'
 
 cursor.execute('''
-SELECT manufacturer,brand,name,item.itemid,SUM(binItems.quantity)
+SELECT manufacturer,brand,name,item.itemid,SUM(binItems.quantity) AS qty
 FROM
     item
     LEFT JOIN binItems USING (itemid)
@@ -24,13 +24,17 @@ FROM
 WHERE
     ebayList.title IS NULL
 GROUP BY item.itemid
+HAVING qty IS NOT NULL
 ORDER BY manufacturer,brand,name''')
 
 print '<TABLE BORDER=1 CLASS="listthings sortable">'
 print '<TR><TH>Item</TH><TH>Qty</TH></TR>'
+count = 0
 for (mfr,brand,name,itemId,qty) in cursor:
+    count += 1
     print '<TR><TD>',getItemName(mfr,brand,name),'</TD><TD>',qty,'</TD></TR>'
 
-print '</TABLE>'    
+print '</TABLE>'
+print '<p><i>Total rows: %d</i></p>'%count
 printFooter()
 

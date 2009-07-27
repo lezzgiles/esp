@@ -20,7 +20,7 @@ if not form.has_key('title'):
 
 title = form['title'].value
 
-print "<p>Please select a stock item to link to ebay listing item<i>%s</i></p>"%title
+print "<p>Please select a stock item to link to ebay listing item <b>%s</b></p>"%title
 
 # Get a list of all items
 cursor.execute("SELECT itemId,manufacturer,brand,name FROM item ORDER BY manufacturer,brand,name")

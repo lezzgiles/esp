@@ -71,6 +71,7 @@ def buildRequestXml(pageNo,number):
               "<OutputSelector>TotalNumberOfPages</OutputSelector>" + \
               "<OutputSelector>ItemArray.Item.Quantity</OutputSelector>" + \
               "<OutputSelector>ItemArray.Item.Title</OutputSelector>" + \
+              "<OutputSelector>ItemArray.Item.SellingStatus.ListingStatus</OutputSelector>" + \
               "<Pagination>"+\
                  "<EntriesPerPage>%d</EntriesPerPage>"%number+\
                  "<PageNumber>%d</PageNumber>"%pageNo+\
@@ -121,7 +122,9 @@ def getPage(connection,pageNo,number,itemList):
             for item in response.getElementsByTagName('Item'):
                 title = getText(item.getElementsByTagName('Title')[0].childNodes)
                 quantity = getText(item.getElementsByTagName('Quantity')[0].childNodes)
-                itemList.append([title,quantity])
+                listingStatus = getText(item.getElementsByTagName('ListingStatus')[0].childNodes)
+                if listingStatus == 'Active':
+                    itemList.append([title,quantity])
 
     # force garbage collection of the DOM object
     response.unlink()
@@ -199,8 +202,12 @@ ORDER BY
 
 print "<TABLE BORDER=1 class='listthings sortable'>"
 print "<TR><TH>Ebay Title</TH><TH>Listed<br />Qty</TH><TH>Item</TH><TH>Stock<br />Qty</TH></TR>"
+count = 0
 for (title,listQty,mfr,brand,name,gotQty) in cursor:
-    if listQty != gotQty:
+    count += 1
+    if not gotQty:
+        rowClass = 'CLASS=warning'
+    elif listQty != gotQty:
         rowClass = 'CLASS=error'
     else:
         rowClass = ''
@@ -211,5 +218,5 @@ for (title,listQty,mfr,brand,name,gotQty) in cursor:
         linkCells = '<TD>'+getItemName(mfr,brand,name)+'</TD><TD>'+str(gotQty)+'</TD>'
     print "<TR %s><TD>%s</TD><TD>%s</TD>%s</TR>"%(rowClass,title,listQty,linkCells)
 print "</TABLE>"
-
+print "<p><i>%d entries</i></p>"%count
 printFooter()

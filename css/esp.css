@@ -6,6 +6,7 @@ body  {
 p.error {color:red;font-weight:bold}
 p.info {font-weight:bold}
 tr.error {background-color:red}
+tr.warning {background-color:pink}
 td.money {text-align:right}
 input.money {text-align:right}
 div.mainbody {
