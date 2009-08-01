@@ -7,6 +7,7 @@ import cgi
 import sys
 import urllib
 from myutils import c,cursor,sql, printHeader, printFooter, gotoButton, centsToDollarString, dollarStringToCents, cell, moneyCell, getItemName
+from datetime import datetime,timedelta
 
 cgitb.enable()
 form = cgi.FieldStorage()
@@ -62,11 +63,15 @@ def buildHttpHeaders():
 # FUNCTION: buildRequestXml
 # Build the body of the call (in XML) incorporating the required parameters to pass
 def buildRequestXml(pageNo,number):
+    now = datetime.now()
+    now = now.replace(microsecond=0)
+    nowString = now.isoformat()
+    futureString = (now + timedelta(days=120)).isoformat()
     requestXml ="<?xml version='1.0' encoding='utf-8'?>"+\
               "<GetSellerList xmlns=\"urn:ebay:apis:eBLBaseComponents\">"+\
               "<RequesterCredentials><eBayAuthToken>" + userToken + "</eBayAuthToken></RequesterCredentials>" + \
-              "<EndTimeFrom>2009-07-20T00:00:00.000Z</EndTimeFrom>" + \
-              "<EndTimeTo>2009-10-10T00:00:00.000Z</EndTimeTo>" + \
+              "<EndTimeFrom>%s</EndTimeFrom>"%nowString + \
+              "<EndTimeTo>%s</EndTimeTo>"%futureString + \
               "<DetailLevel>ReturnAll</DetailLevel>" + \
               "<OutputSelector>TotalNumberOfPages</OutputSelector>" + \
               "<OutputSelector>ItemArray.Item.Quantity</OutputSelector>" + \
@@ -168,6 +173,7 @@ def loadFromEbay():
 ###########################################################################
 # Main program
 printHeader('Ebay Listings')
+
 
 ###########################################################################
 # Import data
