@@ -45,7 +45,6 @@ def printNavigation():
     print gotoButton('Stock list','stockList.py')
     print gotoButton('Bin list','binList.py')
     print gotoButton('Ebay Listings','ebayListing.py')
-    print gotoButton('Ebay Unlisted','ebayMissing.py')
     print '<br />'
     print gotoButton('Bin management','bins.py')
     print gotoButton('Item type management','items.py')

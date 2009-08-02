@@ -1,3 +1,4 @@
+----DO NOT RUN DIRECTLY----
 #!/python26/python.exe
 # -*- coding: UTF-8 -*-
 
@@ -64,6 +65,7 @@ sqlStatements = (
 'DROP TABLE IF EXISTS ebayList',
 '''CREATE TABLE ebayList (
  title TEXT NOT NULL,
+ itemId TEXT NOT NULL,
  quantity INTEGER NOT NULL
 )''',
 # Link table from ebay listing items to stock items

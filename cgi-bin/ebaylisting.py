@@ -17,7 +17,7 @@ import httplib, ConfigParser
 from xml.dom.minidom import parse, parseString
 
 # How many items to retrieve at a time
-pageSize = 200
+pageSize = 50
 
 # open config file
 config = ConfigParser.ConfigParser()
@@ -72,21 +72,18 @@ def buildRequestXml(pageNo,number):
               "<RequesterCredentials><eBayAuthToken>" + userToken + "</eBayAuthToken></RequesterCredentials>" + \
               "<EndTimeFrom>%s</EndTimeFrom>"%nowString + \
               "<EndTimeTo>%s</EndTimeTo>"%futureString + \
-              "<DetailLevel>ReturnAll</DetailLevel>" + \
-              "<OutputSelector>TotalNumberOfPages</OutputSelector>" + \
-              "<OutputSelector>ItemArray.Item.Quantity</OutputSelector>" + \
-              "<OutputSelector>ItemArray.Item.Title</OutputSelector>" + \
-              "<OutputSelector>ItemArray.Item.SellingStatus.ListingStatus</OutputSelector>" + \
-              "<OutputSelector>ItemArray.Item.SellingStatus.QuantitySold</OutputSelector>" + \
+              "<GranularityLevel>Coarse</GranularityLevel>" + \
               "<Pagination>"+\
                  "<EntriesPerPage>%d</EntriesPerPage>"%number+\
                  "<PageNumber>%d</PageNumber>"%pageNo+\
                "</Pagination>"+\
               "</GetSellerList>"
-#    requestXml = "<?xml version='1.0' encoding='utf-8'?>"+\
-#              "<GeteBayOfficialTimeRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">"+\
-#              "<RequesterCredentials><eBayAuthToken>" + userToken + "</eBayAuthToken></RequesterCredentials>" + \
-#              "</GeteBayOfficialTimeRequest>"
+#              "<DetailLevel>ReturnAll</DetailLevel>" + \
+#              "<OutputSelector>TotalNumberOfPages</OutputSelector>" + \
+#              "<OutputSelector>ItemArray.Item.Quantity</OutputSelector>" + \
+#              "<OutputSelector>ItemArray.Item.Title</OutputSelector>" + \
+#              "<OutputSelector>ItemArray.Item.SellingStatus.ListingStatus</OutputSelector>" + \
+#              "<OutputSelector>ItemArray.Item.SellingStatus.QuantitySold</OutputSelector>" + \
 
     return requestXml
 
@@ -127,12 +124,13 @@ def getPage(connection,pageNo,number,itemList):
             totalNumberOfPages = int(getText(response.getElementsByTagName('TotalNumberOfPages')[0].childNodes))
             for item in response.getElementsByTagName('Item'):
                 title = getText(item.getElementsByTagName('Title')[0].childNodes)
+                itemId = getText(item.getElementsByTagName('ItemID')[0].childNodes)
                 quantity = getText(item.getElementsByTagName('Quantity')[0].childNodes)
                 listingStatus = getText(item.getElementsByTagName('ListingStatus')[0].childNodes)
                 quantitySold = getText(item.getElementsByTagName('QuantitySold')[0].childNodes)
                 quantity = int(quantity) - int(quantitySold)
                 if listingStatus == 'Active':
-                    itemList.append([title,quantity])
+                    itemList.append([title,itemId,quantity])
 
     # force garbage collection of the DOM object
     response.unlink()
@@ -163,10 +161,10 @@ def loadFromEbay():
 
     # Clean up the table
     cursor.execute("DELETE FROM ebayList")
-
+    
     # Add the new data to the table    
-    for (title,quantity) in itemList:
-        cursor.execute("INSERT INTO ebayList (title,quantity) VALUES (?,?)",(title,quantity))
+    for (title,itemId,quantity) in itemList:
+        cursor.execute("INSERT INTO ebayList (title,itemId,quantity) VALUES (?,?,?)",(title,itemId,quantity))
 
     c.commit()        
 
@@ -199,13 +197,13 @@ if form.has_key('link'):
 # Table
 cursor.execute('''
 SELECT
-    title,ebayList.quantity,Item.manufacturer,Item.brand,Item.name,SUM(BinItems.quantity)
+    title,ebayList.quantity,ebayList.itemId,Item.manufacturer,Item.brand,Item.name,SUM(BinItems.quantity)
 FROM
     ebayList
     LEFT JOIN ebayList2Item USING (title)
     LEFT JOIN BinItems USING (itemId)
     LEFT JOIN Item USING (itemId)
-GROUP BY title
+GROUP BY ebayList.itemId
 ORDER BY
     title''')
 
@@ -215,7 +213,7 @@ count = 0
 itemsSeen = {}
 results = []
 duplicates = {}
-for (title,listQty,mfr,brand,name,gotQty) in cursor:
+for (title,listQty,itemId,mfr,brand,name,gotQty) in cursor:
     if mfr:
         itemName = getItemName(mfr,brand,name)
         if itemName in itemsSeen:

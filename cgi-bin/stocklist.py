@@ -14,11 +14,13 @@ printHeader('Stock list')
 
 cursor.execute('''
 SELECT
-    itemId,manufacturer,brand,name,SUM(quantity) AS number
+    Item.itemId,manufacturer,brand,name,SUM(BinItems.quantity) AS number, ebayList.title
 FROM
     Item
-    INNER JOIN BinItems using (itemId)
-GROUP BY itemId
+    INNER JOIN BinItems USING (itemId)
+    LEFT JOIN ebayList2item USING (itemId)
+    LEFT JOIN ebayList USING (title)
+GROUP BY Item.itemId
 ORDER BY manufacturer,brand,name
 ''')
 
@@ -29,11 +31,15 @@ if len(stockList) == 0:
     print "<H2>You don't have any stock</H2>"
 else:
     print "<TABLE BORDER=1 class='listthings sortable'>"
-    print "<TR><TH>Item</TH><TH>Qty</TH></TR>"
-    for (itemId,manufacturer,brand,name,number) in stockList:
+    print "<TR><TH>Item</TH><TH>Qty</TH><TH>Listed?</TH></TR>"
+    for (itemId,manufacturer,brand,name,number,ebayTitle) in stockList:
         print "<TR>"
         print "<TD><A HREF=singleitem.py?itemId=%s>%s</A></TD>"%(itemId,getItemName(manufacturer,brand,name))
         print "<TD>%d</TD>"%(number,)
+        if ebayTitle:
+            print "<TD>Yes</TD>"
+        else:
+            print "<TD>No</TD>"
         print "</TR>"
     print "</TABLE>"
 

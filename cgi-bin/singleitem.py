@@ -44,6 +44,7 @@ print "<TH>Prorated<br />shipping</TH>"
 print "<TH>Total<br />per unit</TH>"
 print "</TR>"
 for (quantity,pricePerItem,purchaseDate,type,direction,description,proratedShipping) in cursor:
+    if not proratedShipping: proratedShipping = 0
     tranType = getTranType(type,direction)
     print "<TR>"
     print "<TD>%s</TD>"%purchaseDate
