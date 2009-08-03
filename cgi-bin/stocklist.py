@@ -14,12 +14,15 @@ printHeader('Stock list')
 
 cursor.execute('''
 SELECT
-    Item.itemId,manufacturer,brand,name,SUM(BinItems.quantity) AS number, ebayList.title
+    Item.itemId AS id,
+    manufacturer,
+    brand,
+    name,
+    SUM(BinItems.quantity) AS number,
+    ( SELECT title FROM ebayList2item LEFT JOIN ebayList USING (title) where ebayList2item.itemId = Item.itemId )
 FROM
     Item
     INNER JOIN BinItems USING (itemId)
-    LEFT JOIN ebayList2item USING (itemId)
-    LEFT JOIN ebayList USING (title)
 GROUP BY Item.itemId
 ORDER BY manufacturer,brand,name
 ''')
