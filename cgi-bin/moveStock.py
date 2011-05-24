@@ -4,7 +4,7 @@
 # enable debugging
 import cgitb
 import cgi
-from myutils import c,cursor,sql, printHeader, printFooter, printOptions, centsToDollarString, cell, getItemName
+from myutils import c,cursor,sql, printHeader, printFooter, printOptions, centsToDollarString, cell, getItemName,sortLists
 
 cgitb.enable()
 
@@ -54,13 +54,23 @@ for (thisBinId,name,slots,used) in cursor:
         slots = slots - used
     toBins.append((thisBinId,name,slots))
 
+def nameToList(a):
+    (thisBinId,name,slots) = a
+    return name.split()
+
+toBins.sort(sortLists,nameToList)
+
 ###################################
 # Tell javascript what's happening
 print '<SCRIPT LANGUAGE=JavaScript>'
 print 'binsWithSpaces = new Array();'
+print 'sortedBins = new Array();'
+i = 0
 for (thisBinId,name,slots) in toBins:
     if not slots: slots = 99999
     print 'binsWithSpaces[%s] = {name: "%s", slots: %s};'%(thisBinId,name,slots)
+    print 'sortedBins[%d] = %s;' % (i,thisBinId)
+    i += 1
 
 print '</SCRIPT>'
 
@@ -88,7 +98,9 @@ print '''
 <SCRIPT LANGUAGE=JavaScript>
 
 selectList = document.getElementById('addBinId');
-for (binId in binsWithSpaces) {
+
+for (binIdIdx in sortedBins) {
+    binId = sortedBins[binIdIdx]
     thisBin = binsWithSpaces[binId];
     option = document.createElement('option');
     if (thisBin.slots == 99999) {
@@ -112,6 +124,12 @@ function addBinRow()
     slots = binsWithSpaces[binId].slots;
     newCell0.innerHTML = binsWithSpaces[binId].name + "<INPUT TYPE=HIDDEN NAME=addBin-"+thisRow+" VALUE="+binId+" />"
     newCell1.innerHTML = incDecField('addQty-'+thisRow,slots,'moved');
+
+    neededSlots = document.getElementById('moved').value;
+    var canMove = Math.min(neededSlots,slots);
+    document.getElementById('addQty-'+thisRow).value = canMove;
+    document.getElementById('moved').value -= canMove;
+
     selectList = document.getElementById('addBinId');
     for (option in selectList.options) {
         if (selectList.options[option].value == binId) {

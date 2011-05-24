@@ -86,6 +86,7 @@ sorttable = {
 	      } else {
 	        headrow[i].sorttable_sortfunction = sorttable.guessType(table,i);
 	      }
+
 	      // make it clickable to sort
 	      headrow[i].sorttable_columnindex = i;
 	      headrow[i].sorttable_tbody = table.tBodies[0];
@@ -263,13 +264,21 @@ sorttable = {
     if (isNaN(bb)) bb = 0;
     return aa-bb;
   },
+  alphaHash: Object(),
   sort_alpha: function(a,b) {
     //if (a[0]==b[0]) return 0;
     //if (a[0]<b[0]) return -1;
     //return 1;
     // Modified to sort by list of words, sorted numerically if they are numbers
-    aWords = a[0].split(/\s+/);
-    bWords = b[0].split(/\s+/);
+    if (typeof(sorttable.alphaHash[a[0]]) == 'undefined') {
+	sorttable.alphaHash[a[0]] = a[0].split(/\s+/);
+    }
+    aWords = sorttable.alphaHash[a[0]];
+    if (typeof(sorttable.alphaHash[b[0]]) == 'undefined') {
+	sorttable.alphaHash[b[0]] = b[0].split(/\s+/);
+    }
+    bWords = sorttable.alphaHash[b[0]];
+
     for (var i=0; ; i++) {
       if (aWords.length < i) {
         if (aWords.length == bWords.length) return 0;

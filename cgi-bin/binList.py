@@ -5,17 +5,24 @@
 import cgitb
 import cgi
 import sys
-from myutils import c,cursor,sql, printHeader, printFooter, printOptions, centsToDollarString, gotoButton, getItemName
+from myutils import c,cursor,sql, printRedirect,printHeader1,printHeader2, printFooter, printOptions, centsToDollarString, gotoButton, getItemName, sortLists
 cgitb.enable()
 
 form = cgi.FieldStorage()
 
-printHeader('Bin/stock list')
+printHeader1('Bin/stock list')
+
+errorString = None
 
 #########################################
 if form.has_key('moveStock'):
     try:
         tableSize = int(form['tableSize'].value)
+
+        delBin = form['delBin'].value
+        delItem= form['delItem'].value
+
+        history = "MOVE %s FROM %s"%(delItem,delBin)
 
         moveDetails = []
         totalToMove = 0
@@ -25,9 +32,8 @@ if form.has_key('moveStock'):
             if binQty == 0: continue
             totalToMove += binQty
             moveDetails.append([binId,binQty])
-
-        delBin = form['delBin'].value
-        delItem= form['delItem'].value
+            
+            history += " %d TO %s"%(binQty,binId)
 
         cursor.execute('SELECT SUM(quantity) FROM binItems WHERE binId = ? and itemId = ? GROUP BY binId',(delBin,delItem))
         (foundQty,) = cursor.fetchone()
@@ -43,12 +49,18 @@ if form.has_key('moveStock'):
         if foundQty > totalToMove:
             cursor.execute('INSERT INTO binItems (binId,itemId,quantity) VALUES (?,?,?)',(delBin,delItem,foundQty-totalToMove))
             
+        cursor.execute('''INSERT INTO history (historyDate,body) VALUES (DATETIME('now'),?)''',(history,))
         c.commit()
+        # Redirect to same page, so page reload doesn't re-add move
+        printRedirect('Move completed','binList.py',0)
+        sys.exit()
 
     except Exception,e:
         c.rollback()
-        print "<p class=error>Problem with database update:</p><pre>",sys.exc_info(),"</pre>"
+        errorString = "<p class=error>Problem with database update:</p><pre>%s</pre>"%str(sys.exc_info())
     
+printHeader2('Bin/stock list',errorString)
+
 #########################################    
 cursor.execute('''
 SELECT
@@ -62,22 +74,6 @@ GROUP BY binId,itemId
 
 binList = []
 for binDetails in cursor: binList.append(binDetails)
-
-# Sort the list by words
-def sortLists(a,b):
-    # if either is 'unstocked', it comes first
-    if a[0] == 'unstocked': return -1
-    if b[0] == 'unstocked': return 1
-    matchLength = min((len(a),len(b)))
-    for i in range(matchLength):
-        if a[i] == b[i]: continue
-        try:
-            return int(a[i]) - int(b[i])
-        except:
-            pass
-        if a[i] > b[i]: return 1
-        if a[i] < b[i]: return -1
-    return 0
 
 def nameToList(a):
     (binId,itemId,binName,itemMfr,itemBrand,itemName,qty) = a

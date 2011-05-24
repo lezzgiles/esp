@@ -12,7 +12,7 @@ cgitb.enable()
 
 form = cgi.FieldStorage()
 
-printHeader('Link Ebay title to stock item')
+printHeader('Link Ebay title to kit')
 
 if not form.has_key('title'):
     print "No ebay listing title specified"
@@ -20,19 +20,19 @@ if not form.has_key('title'):
 
 title = form['title'].value
 
-print "<p>Please select a stock item to link to ebay listing item <b>%s</b></p>"%title
+print "<p>Please select a kit to link to ebay listing item <b>%s</b></p>"%title
 
 # Get a list of all items
-cursor.execute("SELECT itemId,manufacturer,brand,name FROM item ORDER BY manufacturer,brand,name")
+cursor.execute("SELECT kitId,name FROM Kit ORDER BY name")
 itemOptions = []
-for (itemId,manufacturer,brand,name) in cursor:
-    itemOptions.append('<OPTION VALUE=%s>%s</OPTION>'%(itemId,getItemName(manufacturer,brand,name)))
+for (itemId,name) in cursor:
+    itemOptions.append('<OPTION VALUE=%s>%s</OPTION>'%(itemId,name))
 print '<FORM ACTION=ebayListing.py>'
-print '<SELECT NAME=itemid>'
+print '<SELECT NAME=kitid>'
 for option in itemOptions: print option
 print '</SELECT>'
 print '<INPUT TYPE=HIDDEN NAME=title VALUE=%s />'%urllib.quote_plus(title)
-print '<INPUT TYPE=SUBMIT VALUE="Add link" NAME=linkToItem>'
+print '<INPUT TYPE=SUBMIT VALUE="Add link" NAME=linkToKit>'
 print '</FORM>'
 
 printFooter()

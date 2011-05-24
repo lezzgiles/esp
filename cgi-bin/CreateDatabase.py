@@ -61,6 +61,14 @@ sqlStatements = (
     quantity INTEGER NOT NULL
 )''',
 
+# History
+'DROP TABLE IF EXISTS history',
+'''CREATE TABLE history (
+  historyId INTEGER PRIMARY KEY,
+  historyDate TEXT,
+  body TEXT
+)''',
+
 # List of items in ebay
 'DROP TABLE IF EXISTS ebayList',
 '''CREATE TABLE ebayList (
@@ -74,6 +82,7 @@ sqlStatements = (
     title TEXT PRIMARY KEY,
     itemId INTEGER NOT NULL
 )''')
+
 
 for stmt in sqlStatements: sql(c,stmt)
 print '<HR>'

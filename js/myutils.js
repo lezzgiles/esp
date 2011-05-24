@@ -77,6 +77,44 @@ function moneyFormat(textObj) {
    }
 }
 
+// Returns the cents for a text object value
+function dollars2cents(textObj)
+{
+   var newValue = textObj.value;
+   var decAmount = "";
+   var dolAmount = "";
+   var decFlag = false;
+   var aChar = "";
+   
+   // ignore all but digits and decimal points.
+   for(i=0; i < newValue.length; i++) {
+      aChar = newValue.substring(i,i+1);
+      if(aChar >= "0" && aChar <= "9") {
+         if(decFlag) {
+           decAmount = "" + decAmount + aChar;
+         }
+         else {
+            dolAmount = "" + dolAmount + aChar;
+         }
+      }
+      if(aChar == ".") {
+         if(decFlag) {
+            dolAmount = "";
+            break;
+         }
+         decFlag=true;
+      }
+   }
+    if (dolAmount == "") { dolAmount = 0; }
+    if (decAmount == "") { decAmount = 0; }
+    return parseInt(dolAmount)*100+parseInt(decAmount);
+}
+
+function cents2dollars(value)
+{
+    return (value/100).toFixed(2);
+}
+
 function incdec(inc,incMax,dec)
 {
     incField = document.getElementById(inc);
@@ -152,5 +190,47 @@ function checkField(fieldName,msg)
      }
      return true;
 }
+
+function stopRKey(evt) {
+   var evt = (evt) ? evt : ((event) ? event : null);
+   var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+   if ((evt.keyCode == 13) && (node.type=="text")) {return false;}
+}
+
+// copyright 1999 Idocs, Inc. http://www.idocs.com
+// Distribute this script freely but keep this notice in place
+function numbersonly(myfield, e, dec)
+{
+var key;
+var keychar;
+
+if (window.event)
+   key = window.event.keyCode;
+else if (e)
+   key = e.which;
+else
+   return true;
+keychar = String.fromCharCode(key);
+
+// control keys
+if ((key==null) || (key==0) || (key==8) || 
+    (key==9) || (key==13) || (key==27) )
+   return true;
+
+// numbers
+else if ((("0123456789").indexOf(keychar) > -1))
+   return true;
+
+// decimal point jump
+else if (dec && (keychar == "."))
+   {
+   myfield.form.elements[dec].focus();
+   return false;
+   }
+else
+   return false;
+}
+
+document.onkeypress = stopRKey;
 
 // end script-->

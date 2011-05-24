@@ -4,6 +4,7 @@
 # enable debugging
 import cgitb
 import cgi
+import sqlite3
 from myutils import c,cursor,sql, printHeader, printFooter
 
 cgitb.enable()
@@ -19,11 +20,16 @@ print "<H2>Add new bin</H2>"
 print "<FORM>"
 print "<table>"
 print "<tr><td align=right>Bin name:</td><td><INPUT TYPE=TEXT NAME=name ID=addBinName></INPUT></td></tr>"
-print "<tr><td align=right>Number of slots:</td><td><SELECT name=slots>"
-print "<OPTION VALUE=0 DEFAULT>Unlimited</OPTION>"
-print "<OPTION VALUE=6 DEFAULT>6</OPTION>"
-print "<OPTION VALUE=17 DEFAULT>17</OPTION>"
-print "</SELECT><tr><td align=right>"
+print "<tr><td align=right>Number of slots:</td>"
+print "<td>"
+print "<INPUT name=slots SIZE=5 MAXLENGTH=5 onKeyPress='return numbersonly(this,event)' VALUE=6>"
+print " 0 for unlimited</td>"
+print "</tr>"
+#print "<tr><td align=right>Number of slots:</td><td><SELECT name=slots>"
+#print "<OPTION VALUE=0 DEFAULT>Unlimited</OPTION>"
+#print "<OPTION VALUE=6 DEFAULT>6</OPTION>"
+#print "<OPTION VALUE=17 DEFAULT>17</OPTION>"
+#print "</SELECT><tr><td align=right>"
 print "</table>"
 print "<INPUT TYPE=hidden NAME=add VALUE=1/>"
 print "<INPUT TYPE=SUBMIT VALUE='Add new bin' onClick='return validateForm();' />"
